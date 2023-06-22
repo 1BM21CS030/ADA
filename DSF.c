@@ -2,51 +2,59 @@
 #include<stdlib.h>
 
 int visited[50];
-int top=-1,front=-1,rear=1;
 
-// void push(int node){
-//     visited[++top]=node;
-// }
+struct graph{
+    int no_nodes;
+    int** adj_matrix;
+};
 
-// void pop(){
-//     top--;
-// }
+struct graph* create(){
+    struct graph* graph=(struct graph*)malloc(sizeof(struct graph));
+    printf("Enter the number of nodes\n");
+    scanf("%d",&graph->no_nodes);
+    graph->adj_matrix=(int**)calloc(sizeof(int),graph->no_nodes);
+    for(int i=0;i<graph->no_nodes;i++){
+        *(graph->adj_matrix+i)=(int*)calloc(graph->no_nodes,sizeof(int));
+    }
+    printf("Enter graph as adjcency matrix\n");
+    for(int i=0;i<graph->no_nodes;i++){
+        for(int j=0;j<graph->no_nodes;j++){
+            scanf("%d",*(graph->adj_matrix+i)+j);
+        }
+    }
+    return graph;
+}
 
-
-// int** create(int no_nodes){
-//     int** matrix=(int**)malloc(no_nodes*sizeof(int*));
-//     for(int i=0;i<no_nodes;i++){
-//         *(matrix+i)=(int*)malloc(no_nodes*sizeof(int));
-//     }
-//     printf("\nMatrix created\n");
-//     return matrix;
-// }
-
-// void create_nodes(int** matrix, int s_node, int d_node){
-//     *(*(matrix+s_node)+d_node)=1;
-// }
-
-int arr[50][50];
-
-void DFS(int no_nodes,int start){
+void DFS(struct graph* graph,int start){
     visited[start]=1;
-    printf("%d  ",start);
-    for(int i=0;i<no_nodes;i++){
-        if(!visited[i] && arr[start][i]==1){
-            DFS(no_nodes,i);
+    printf("%d  visited\n",start);
+    for(int i=0;i<graph->no_nodes;i++){
+        if(visited[i]!=1 && *(*(graph->adj_matrix+start)+i)==1){
+            DFS(graph,i);
         }
     }
 }
 
-int main(){
-    int no_nodes;
-    printf("Enter number of nodes\n");
-    scanf("%d",&no_nodes);
-    for(int i=0;i<no_nodes;i++){
-        for(int j=0;j<no_nodes;j++){
-            scanf("%d ",&arr[i][j]);
+void BFS(struct graph* graph){
+    int node[graph->no_nodes],front=0,rear=0;
+    node[rear]=0;
+    do
+    {
+        for (int i = 0; i < graph->no_nodes; i++)
+        {
+            if(*(*(graph->adj_matrix+node[front])+i)==1 && visited[i]!=1){
+                node[++rear]=i;
+            }
         }
-    }
-    DFS(no_nodes,0);
+        visited[node[front]]=1;
+        printf("%d  visited\n",node[front++]);
+        
+    } while (front!=rear);
+    printf("%d  visited\n",node[front]);
+}
+
+int main(){
+    struct graph* node=create();
+    BFS(node);
     return 0;
 }
